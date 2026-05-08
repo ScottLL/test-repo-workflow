@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Calculator</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@500;700&display=swap");
+
+      :root {
+        color-scheme: dark;
+      }
+
+      body {
+        font-family: "Inter", system-ui, sans-serif;
+        margin: 0;
+        min-height: 100vh;
+        background: #050510;
+        overflow: hidden;
+      }
+
+      /* Animated aurora mesh background */
+      .aurora {
+        position: fixed;
+        inset: 0;
+        background:
+          radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.55), transparent 45%),
+          radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.45), transparent 45%),
+          radial-gradient(circle at 60% 80%, rgba(56, 189, 248, 0.45), transparent 45%),
+          radial-gradient(circle at 10% 90%, rgba(34, 197, 94, 0.30), transparent 50%);
+        filter: blur(60px) saturate(140%);
+        animation: drift 18s ease-in-out infinite alternate;
+        z-index: 0;
+      }
+
+      @keyframes drift {
+        0%   { transform: translate3d(0,0,0) scale(1); }
+        50%  { transform: translate3d(-3%, 2%, 0) scale(1.05); }
+        100% { transform: translate3d(2%, -3%, 0) scale(1.02); }
+      }
+
+      /* Glassmorphism card */
+      .glass {
+        background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+        backdrop-filter: blur(24px) saturate(160%);
+        -webkit-backdrop-filter: blur(24px) saturate(160%);
+        border: 1px solid rgba(255,255,255,0.12);
+        box-shadow:
+          0 30px 80px -20px rgba(0,0,0,0.6),
+          inset 0 1px 0 rgba(255,255,255,0.10);
+      }
+
+      .display-glow {
+        text-shadow: 0 0 24px rgba(165, 180, 252, 0.35);
+      }
+
+      .btn {
+        position: relative;
+        font-family: "Inter", sans-serif;
+        font-weight: 600;
+        border-radius: 18px;
+        transition: transform 120ms ease, box-shadow 200ms ease, background 200ms ease;
+        will-change: transform;
+        user-select: none;
+      }
+      .btn:active {
+        transform: scale(0.94);
+      }
+      .btn-digit {
+        background: rgba(255,255,255,0.06);
+        color: #f3f4ff;
+        border: 1px solid rgba(255,255,255,0.08);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+      }
+      .btn-digit:hover {
+        background: rgba(255,255,255,0.12);
+      }
+      .btn-op {
+        background: linear-gradient(135deg, #fb923c, #f43f5e);
+        color: white;
+        box-shadow: 0 10px 30px -8px rgba(244,63,94,0.55);
+      }
+      .btn-op:hover {
+        box-shadow: 0 14px 36px -6px rgba(244,63,94,0.7);
+      }
+      .btn-op.active-op {
+        outline: 2px solid rgba(255,255,255,0.85);
+        outline-offset: -2px;
+      }
+      .btn-eq {
+        background: linear-gradient(135deg, #34d399, #06b6d4);
+        color: #051515;
+        box-shadow: 0 10px 30px -6px rgba(16,185,129,0.55);
+      }
+      .btn-clear {
+        background: linear-gradient(135deg, #f472b6, #ef4444);
+        color: white;
+        box-shadow: 0 10px 30px -8px rgba(239,68,68,0.55);
+      }
+      .btn-fn {
+        background: rgba(255,255,255,0.10);
+        color: #c7d2fe;
+        border: 1px solid rgba(255,255,255,0.10);
+      }
+      .btn-fn:hover {
+        background: rgba(255,255,255,0.16);
+      }
+
+      .pulse {
+        animation: pulse-glow 0.45s ease-out;
+      }
+      @keyframes pulse-glow {
+        0%   { text-shadow: 0 0 0 rgba(165, 180, 252, 0); }
+        50%  { text-shadow: 0 0 40px rgba(165, 180, 252, 0.8); }
+        100% { text-shadow: 0 0 24px rgba(165, 180, 252, 0.35); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="aurora"></div>
+    <div id="root" class="relative z-10"></div>
+
+    <script type="text/babel" data-presets="react">
+      const { useState, useEffect, useCallback, useMemo } = React;
+
+      // --- Calculator engine -------------------------------------------------
+      // The display value, the "previous" value (left operand), and the active
+      // operator together describe the calculator's state machine.
+      //
+      // TODO (you implement this): replace the body of `performCalculation`.
+      //
+      // It receives two numbers and an operator string ("+", "-", "*", "/")
+      // and must return the result as a number. Decisions you get to make:
+      //   • How do you handle division by zero? (Infinity? NaN? a sentinel?)
+      //   • Do you round to avoid floating-point noise like 0.1 + 0.2?
+      //   • Any operators beyond the four basics? (e.g. "%", "^")
+      //
+      // Keep it pure — no state, no DOM. Return a number (or NaN for errors).
+      const performCalculation = (prev, current, operator) => {
+        // YOUR CODE HERE — 5-10 lines.
+        throw new Error("performCalculation not implemented yet");
+      };
+
+      // --- UI ---------------------------------------------------------------
+      const BUTTONS = [
+        { label: "C",  kind: "clear", span: 2 },
+        { label: "±",  kind: "fn" },
+        { label: "/",  kind: "op" },
+
+        { label: "7",  kind: "digit" },
+        { label: "8",  kind: "digit" },
+        { label: "9",  kind: "digit" },
+        { label: "*",  kind: "op" },
+
+        { label: "4",  kind: "digit" },
+        { label: "5",  kind: "digit" },
+        { label: "6",  kind: "digit" },
+        { label: "-",  kind: "op" },
+
+        { label: "1",  kind: "digit" },
+        { label: "2",  kind: "digit" },
+        { label: "3",  kind: "digit" },
+        { label: "+",  kind: "op" },
+
+        { label: "0",  kind: "digit", span: 2 },
+        { label: ".",  kind: "digit" },
+        { label: "=",  kind: "eq" },
+      ];
+
+      const formatDisplay = (value) => {
+        if (value === "" || value === null || value === undefined) return "0";
+        if (typeof value === "number") {
+          if (!Number.isFinite(value)) return "Error";
+          // Trim trailing zeros, cap precision.
+          const str = value.toPrecision(12);
+          return parseFloat(str).toString();
+        }
+        return value;
+      };
+
+      const Calculator = () => {
+        const [display, setDisplay] = useState("0");
+        const [previous, setPrevious] = useState(null);
+        const [operator, setOperator] = useState(null);
+        const [waitingForOperand, setWaitingForOperand] = useState(false);
+        const [pulseKey, setPulseKey] = useState(0);
+
+        const inputDigit = useCallback((d) => {
+          setDisplay((cur) => {
+            if (waitingForOperand) return d;
+            if (cur === "0") return d;
+            if (cur.length >= 14) return cur;
+            return cur + d;
+          });
+          setWaitingForOperand(false);
+        }, [waitingForOperand]);
+
+        const inputDot = useCallback(() => {
+          if (waitingForOperand) {
+            setDisplay("0.");
+            setWaitingForOperand(false);
+            return;
+          }
+          setDisplay((cur) => (cur.includes(".") ? cur : cur + "."));
+        }, [waitingForOperand]);
+
+        const clearAll = useCallback(() => {
+          setDisplay("0");
+          setPrevious(null);
+          setOperator(null);
+          setWaitingForOperand(false);
+        }, []);
+
+        const toggleSign = useCallback(() => {
+          setDisplay((cur) => {
+            if (cur === "0" || cur === "Error") return cur;
+            return cur.startsWith("-") ? cur.slice(1) : "-" + cur;
+          });
+        }, []);
+
+        const applyOperator = useCallback((nextOp) => {
+          const inputValue = parseFloat(display);
+          if (previous === null) {
+            setPrevious(inputValue);
+          } else if (operator && !waitingForOperand) {
+            try {
+              const result = performCalculation(previous, inputValue, operator);
+              const shown = formatDisplay(result);
+              setDisplay(shown);
+              setPrevious(Number.isFinite(result) ? result : null);
+            } catch (err) {
+              setDisplay("Error");
+              setPrevious(null);
+              setOperator(null);
+              setWaitingForOperand(true);
+              return;
+            }
+          }
+          setOperator(nextOp);
+          setWaitingForOperand(true);
+        }, [display, previous, operator, waitingForOperand]);
+
+        const equals = useCallback(() => {
+          if (operator === null || previous === null) return;
+          const inputValue = parseFloat(display);
+          try {
+            const result = performCalculation(previous, inputValue, operator);
+            setDisplay(formatDisplay(result));
+            setPrevious(null);
+            setOperator(null);
+            setWaitingForOperand(true);
+            setPulseKey((k) => k + 1);
+          } catch (err) {
+            setDisplay("Error");
+            setPrevious(null);
+            setOperator(null);
+            setWaitingForOperand(true);
+          }
+        }, [display, previous, operator]);
+
+        const handleButton = useCallback((btn) => {
+          if (display === "Error" && btn.label !== "C") {
+            // Only "C" recovers from an error state.
+            return;
+          }
+          switch (btn.kind) {
+            case "digit":
+              if (btn.label === ".") inputDot();
+              else inputDigit(btn.label);
+              break;
+            case "op":      applyOperator(btn.label); break;
+            case "eq":      equals(); break;
+            case "clear":   clearAll(); break;
+            case "fn":
+              if (btn.label === "±") toggleSign();
+              break;
+          }
+        }, [display, inputDigit, inputDot, applyOperator, equals, clearAll, toggleSign]);
+
+        // Keyboard support.
+        useEffect(() => {
+          const onKey = (e) => {
+            const k = e.key;
+            if (/^\d$/.test(k))                inputDigit(k);
+            else if (k === ".")                inputDot();
+            else if (k === "+" || k === "-" || k === "*" || k === "/") applyOperator(k);
+            else if (k === "Enter" || k === "=") { e.preventDefault(); equals(); }
+            else if (k === "Escape" || k === "c" || k === "C") clearAll();
+            else if (k === "Backspace") {
+              setDisplay((cur) => (cur.length > 1 ? cur.slice(0, -1) : "0"));
+            }
+          };
+          window.addEventListener("keydown", onKey);
+          return () => window.removeEventListener("keydown", onKey);
+        }, [inputDigit, inputDot, applyOperator, equals, clearAll]);
+
+        const subtitle = useMemo(() => {
+          if (previous === null || operator === null) return " ";
+          return `${formatDisplay(previous)} ${operator}`;
+        }, [previous, operator]);
+
+        return (
+          <div className="min-h-screen flex items-center justify-center p-6">
+            <div className="glass rounded-3xl p-6 w-[360px]">
+              <div className="flex items-center justify-between mb-4 px-1">
+                <div className="flex gap-1.5">
+                  <span className="w-3 h-3 rounded-full bg-rose-400/80"></span>
+                  <span className="w-3 h-3 rounded-full bg-amber-300/80"></span>
+                  <span className="w-3 h-3 rounded-full bg-emerald-400/80"></span>
+                </div>
+                <span className="text-xs text-white/50 tracking-widest uppercase">Calc</span>
+              </div>
+
+              <div className="rounded-2xl px-5 py-6 mb-5 bg-black/35 border border-white/5 text-right">
+                <div className="text-sm text-white/40 h-5 font-mono">{subtitle}</div>
+                <div
+                  key={pulseKey}
+                  className="text-5xl font-bold text-white display-glow pulse"
+                  style={{ fontFamily: "JetBrains Mono, monospace", lineHeight: 1.1 }}
+                >
+                  {display}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-4 gap-3">
+                {BUTTONS.map((b) => {
+                  const cls =
+                    b.kind === "digit" ? "btn btn-digit"
+                    : b.kind === "op"  ? "btn btn-op" + (operator === b.label && waitingForOperand ? " active-op" : "")
+                    : b.kind === "eq"  ? "btn btn-eq"
+                    : b.kind === "clear" ? "btn btn-clear"
+                    : "btn btn-fn";
+                  return (
+                    <button
+                      key={b.label}
+                      onClick={() => handleButton(b)}
+                      className={cls + " h-16 text-xl"}
+                      style={{ gridColumn: b.span ? `span ${b.span} / span ${b.span}` : undefined }}
+                    >
+                      {b.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <p className="text-[11px] text-white/40 text-center mt-5 tracking-wider">
+                Tip: keyboard works too — digits, + − × ÷, Enter, Esc, ⌫
+              </p>
+            </div>
+          </div>
+        );
+      };
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<Calculator />);
+    </script>
+  </body>
+</html>
