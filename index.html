@@ -141,8 +141,18 @@
       //
       // Keep it pure — no state, no DOM. Return a number (or NaN for errors).
       const performCalculation = (prev, current, operator) => {
-        // YOUR CODE HERE — 5-10 lines.
-        throw new Error("performCalculation not implemented yet");
+        let result;
+        switch (operator) {
+          case "+": result = prev + current; break;
+          case "-": result = prev - current; break;
+          case "*": result = prev * current; break;
+          case "/":
+            if (current === 0) return NaN;
+            result = prev / current;
+            break;
+          default: return NaN;
+        }
+        return Math.round(result * 1e12) / 1e12;
       };
 
       // --- UI ---------------------------------------------------------------
